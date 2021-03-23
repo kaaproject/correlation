@@ -35,7 +35,7 @@ const (
 func ContextWithCorrelationID(parent context.Context, correlationID ...string) context.Context {
 	var id string
 	if len(correlationID) == 0 || len(correlationID[0]) == 0 {
-		id = GenerateCorrelationID()
+		id = GenerateID()
 	} else {
 		id = correlationID[0]
 	}
@@ -56,7 +56,7 @@ func WithCorrelationID(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		correlationID := r.Header.Get(correlationIDHeaderName)
 		if correlationID == "" {
-			correlationID = GenerateCorrelationID()
+			correlationID = GenerateID()
 		}
 
 		next.ServeHTTP(w, r.WithContext(ContextWithCorrelationID(r.Context(), correlationID)))
@@ -67,13 +67,13 @@ func WithCorrelationID(next http.Handler) http.Handler {
 func SetCorrelationID(ctx context.Context, r *http.Request) {
 	id := ID(ctx)
 	if len(id) == 0 {
-		id = GenerateCorrelationID()
+		id = GenerateID()
 	}
 
 	r.Header.Set(correlationIDHeaderName, id)
 }
 
-// GenerateCorrelationID generates correlation ID
-func GenerateCorrelationID() string {
+// GenerateID generates correlation ID
+func GenerateID() string {
 	return xid.New().String()
 }
