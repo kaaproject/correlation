@@ -73,6 +73,7 @@ func SetCorrelationID(ctx context.Context, r *http.Request) {
 	r.Header.Set(correlationIDHeaderName, id)
 }
 
+// GenerateCorrelationID generates correlation ID
 func GenerateCorrelationID() string {
 	return xid.New().String()
 }
